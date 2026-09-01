@@ -1,0 +1,43 @@
+{
+  "experiment_design": {
+    "treatment_unit": "Berlin",
+    "donor_pool_size": 5,
+    "treatment_window_weeks": 12,
+    "treatment_selection_documented": false
+  },
+  "causal_validity": {
+    "pre_treatment_rmse": 3.29,
+    "placebo_rank": 1,
+    "placebo_pool_size": 6,
+    "placebo_p_value": 0.1667
+  },
+  "statistical_evidence": {
+    "point_estimate": 54.78,
+    "point_estimate_unit": "incremental customers per week",
+    "bootstrap_ci_95": {
+      "lower": 45.22,
+      "upper": 65.34,
+      "measures": "within-Berlin week-to-week noise only (12 post-treatment weekly gaps, resampled). Does NOT resolve the cross-city placebo uncertainty (p=0.167) -- both must be reported together."
+    },
+    "secondary_finding": {
+      "description": "Treatment-window cohort week-4 retention vs. time-matched pre-treatment cohorts",
+      "p_value": 0.0001,
+      "sample_size": 8
+    }
+  },
+  "economics": {
+    "icac": 158.76,
+    "observed_floor": {
+      "incremental_contribution": 90552.02,
+      "incremental_spend": 104367.38,
+      "iroas": 1.97,
+      "above_breakeven": false
+    },
+    "projected_extrapolation": {
+      "incremental_contribution": 166626.45,
+      "iroas": 3.63,
+      "above_breakeven": true,
+      "key_assumption": "constant decay rate from observed weeks 0-4, extrapolated to 52 weeks; retention-window cohorts decay faster (0.623/4wk) than matched pre-treatment cohorts (0.754/4wk)"
+    }
+  }
+}

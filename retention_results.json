@@ -1,0 +1,11 @@
+{
+  "method": "permutation test, 100000 reshuffles of pooled treatment+pre-treatment cohort labels",
+  "snapshot": "weeks_since_acquisition == 4",
+  "treatment_cohorts_n": 8,
+  "pre_treatment_cohorts_n": 8,
+  "treatment_retention_pct": 60.988885397278736,
+  "pre_treatment_retention_pct": 74.17841075396869,
+  "gap_percentage_points": -13.189525356689957,
+  "p_value": 0.00011,
+  "note": "pre-treatment cohorts are TIME-MATCHED (n most recent pre-treatment cohorts, not full 2-year history) to avoid confounding with secular market trends"
+}

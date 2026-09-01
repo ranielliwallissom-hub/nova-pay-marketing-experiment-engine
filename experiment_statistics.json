@@ -1,0 +1,7 @@
+{
+  "point_estimate": 54.783063959486974,
+  "ci_95_lower": 45.22499810402806,
+  "ci_95_upper": 65.34148434176412,
+  "method": "bootstrap, resampling 12 post-treatment weekly gaps, n=10000",
+  "limitation": "captures within-unit week-to-week noise only, not synthetic-control weight uncertainty"
+}

@@ -1,0 +1,22 @@
+{
+  "incremental_customers": 657.3967675138437,
+  "incremental_spend": 104367.38130434786,
+  "iCAC": 158.75858608043742,
+  "contribution_margin": 0.44,
+  "observed_floor": {
+    "incremental_revenue": 205800.03499880707,
+    "incremental_contribution": 90552.01539947512,
+    "iROAS": 1.971880796727757,
+    "above_breakeven": false
+  },
+  "projected_52wk_hypothesis": {
+    "decay_rate_treatment": 0.6234407591750695,
+    "decay_rate_matched_pre": 0.753917707493724,
+    "ltv_per_customer": 576.0546625725943,
+    "incremental_revenue": 378696.4730865015,
+    "incremental_contribution": 166626.44815806064,
+    "iROAS": 3.628494538750349,
+    "ltv_cac": 3.6284945387503487,
+    "above_breakeven": true
+  }
+}

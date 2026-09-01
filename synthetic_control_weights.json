@@ -1,0 +1,11 @@
+{
+  "weights": {
+    "Cologne": 0.0016,
+    "Frankfurt": 0.1341,
+    "Hamburg": 0.4983,
+    "Munich": 0.3235,
+    "Stuttgart": 0.0425
+  },
+  "pre_rmse": 3.2890745377797774,
+  "treatment_start": "2025-10-06"
+}

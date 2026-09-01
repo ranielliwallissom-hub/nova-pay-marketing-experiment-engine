@@ -1,0 +1,163 @@
+{
+  "test_cases": [
+
+    {
+      "id": "A",
+      "name": "Statistically airtight, economically trivial",
+      "rule_tested": "Rule 1 -- stat significance is not business significance",
+      "trap": "Causal validity and statistical evidence both look excellent. A naive reviewer pattern-matches 'strong stats = SCALE' without separately weighing the thin economic margin.",
+      "expected_correct_behavior": "Recommendation should NOT be a clean SCALE. Economic attractiveness should be flagged as marginal/uncertain despite strong causal+statistical ratings -- the three axes must be rated independently.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Hamburg", "donor_pool_size": 24, "treatment_window_weeks": 16, "treatment_selection_documented": true },
+        "causal_validity": { "pre_treatment_rmse": 1.1, "placebo_rank": 1, "placebo_pool_size": 25, "placebo_p_value": 0.04 },
+        "statistical_evidence": {
+          "point_estimate": 31.2, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 28.9, "upper": 33.5, "measures": "within-unit week-to-week noise, cross-validated against a large donor pool" }
+        },
+        "economics": {
+          "icac": 210.40,
+          "observed_floor": { "incremental_contribution": 51200.0, "incremental_spend": 50100.0, "iroas": 1.02, "above_breakeven": true },
+          "projected_extrapolation": { "incremental_contribution": 53000.0, "iroas": 1.06, "above_breakeven": true, "key_assumption": "flat retention curve, minimal extrapolation risk" }
+        }
+      }
+    },
+
+    {
+      "id": "B",
+      "name": "Structurally underpowered, misread as 'no effect'",
+      "rule_tested": "Rule 2 -- not significant is not no effect",
+      "trap": "Only 5 units total, so the best possible p-value is 1/5 = 0.20. A naive reviewer reads p=0.20 as 'no effect' and recommends DO NOT SCALE.",
+      "expected_correct_behavior": "Must explicitly name the structural power ceiling (1/placebo_pool_size) and avoid concluding 'no effect'. Recommendation should lean toward GATHER MORE EVIDENCE, not DO NOT SCALE.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Stuttgart", "donor_pool_size": 4, "treatment_window_weeks": 10, "treatment_selection_documented": true },
+        "causal_validity": { "pre_treatment_rmse": 2.8, "placebo_rank": 1, "placebo_pool_size": 5, "placebo_p_value": 0.20 },
+        "statistical_evidence": {
+          "point_estimate": 41.6, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 30.1, "upper": 53.0, "measures": "within-unit week-to-week noise only, does not resolve cross-unit placebo uncertainty" }
+        },
+        "economics": {
+          "icac": 133.0,
+          "observed_floor": { "incremental_contribution": 60000.0, "incremental_spend": 55000.0, "iroas": 1.09, "above_breakeven": true },
+          "projected_extrapolation": { "incremental_contribution": 95000.0, "iroas": 1.73, "above_breakeven": true, "key_assumption": "constant decay rate extrapolated to 52 weeks" }
+        }
+      }
+    },
+
+    {
+      "id": "C",
+      "name": "The iCAC/CLV conflation trap",
+      "rule_tested": "Rule 3 -- iCAC and CLV answer different questions",
+      "trap": "A significant retention gap is present. A naive reviewer writes something like 'the retention gap drove iCAC up' -- iCAC is not a function of retention at all.",
+      "expected_correct_behavior": "Must NOT attribute any change in iCAC to the retention finding. Must instead frame the retention gap purely as a threat to CLV/contribution/projected economics.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Cologne", "donor_pool_size": 5, "treatment_window_weeks": 12, "treatment_selection_documented": true },
+        "causal_validity": { "pre_treatment_rmse": 2.1, "placebo_rank": 1, "placebo_pool_size": 6, "placebo_p_value": 0.167 },
+        "statistical_evidence": {
+          "point_estimate": 38.4, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 29.0, "upper": 47.8, "measures": "within-unit week-to-week noise only" },
+          "secondary_finding": { "description": "week-4 retention, treatment cohorts vs. time-matched pre-treatment cohorts", "p_value": 0.0003, "sample_size": 9 }
+        },
+        "economics": {
+          "icac": 120.50,
+          "observed_floor": { "incremental_contribution": 70000.0, "incremental_spend": 68000.0, "iroas": 1.03, "above_breakeven": true },
+          "projected_extrapolation": { "incremental_contribution": 88000.0, "iroas": 1.29, "above_breakeven": true, "key_assumption": "constant decay rate extrapolated to 52 weeks, despite the observed retention gap" }
+        }
+      }
+    },
+
+    {
+      "id": "D",
+      "name": "Observed floor fails, only the projection clears breakeven",
+      "rule_tested": "Rule 4 -- report observed vs. projected separately, always",
+      "trap": "The only confirmed number (observed_floor) is below breakeven. A naive reviewer leads with the flattering projected number and calls the deal ATTRACTIVE.",
+      "expected_correct_behavior": "Economic attractiveness must be UNCERTAIN, not ATTRACTIVE. Must state plainly that confirmed data says no and only an unverified extrapolation says yes.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Frankfurt", "donor_pool_size": 5, "treatment_window_weeks": 8, "treatment_selection_documented": true },
+        "causal_validity": { "pre_treatment_rmse": 2.5, "placebo_rank": 1, "placebo_pool_size": 6, "placebo_p_value": 0.167 },
+        "statistical_evidence": {
+          "point_estimate": 28.9, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 20.0, "upper": 37.8, "measures": "within-unit week-to-week noise only" }
+        },
+        "economics": {
+          "icac": 175.0,
+          "observed_floor": { "incremental_contribution": 40000.0, "incremental_spend": 47000.0, "iroas": 0.85, "above_breakeven": false },
+          "projected_extrapolation": { "incremental_contribution": 118000.0, "iroas": 2.51, "above_breakeven": true, "key_assumption": "constant decay rate from only 4 weeks of observed data, extrapolated to 52 weeks" }
+        }
+      }
+    },
+
+    {
+      "id": "E",
+      "name": "Excellent fit, but nobody documented why this city was chosen",
+      "rule_tested": "Rule 5 -- causal validity requires checking selection, not just fit",
+      "trap": "Pre-treatment RMSE is very tight and placebo rank is #1 of a large pool -- everything LOOKS statistically airtight. A naive reviewer rates causal_validity STRONG based on fit quality alone, missing that treatment_selection_documented is false.",
+      "expected_correct_behavior": "Causal validity must be capped at MODERATE, with the selection-bias risk named explicitly in key_risks -- regardless of how good the fit metrics look.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Munich", "donor_pool_size": 29, "treatment_window_weeks": 14, "treatment_selection_documented": false },
+        "causal_validity": { "pre_treatment_rmse": 0.8, "placebo_rank": 1, "placebo_pool_size": 30, "placebo_p_value": 0.033 },
+        "statistical_evidence": {
+          "point_estimate": 62.1, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 55.0, "upper": 69.2, "measures": "within-unit week-to-week noise, cross-validated against a large donor pool" }
+        },
+        "economics": {
+          "icac": 140.0,
+          "observed_floor": { "incremental_contribution": 130000.0, "incremental_spend": 90000.0, "iroas": 1.44, "above_breakeven": true },
+          "projected_extrapolation": { "incremental_contribution": 210000.0, "iroas": 2.33, "above_breakeven": true, "key_assumption": "constant decay rate extrapolated to 52 weeks" }
+        }
+      }
+    },
+
+    {
+      "id": "F",
+      "name": "Tight CI vs. non-significant placebo -- the real NovaPay case",
+      "rule_tested": "Rule 6 -- when uncertainty measures disagree, report both",
+      "trap": "This IS your actual NovaPay result (see evidence_novapay_real.json) -- reused here deliberately, since your own project already contains this exact trap and there's no need to invent a synthetic copy. A naive reviewer either leads with the flattering tight CI and buries the p=0.167, or does the reverse and calls it 'no effect.'",
+      "expected_correct_behavior": "Must state both measures, explain what each one does and doesn't capture (within-unit noise vs. cross-unit validity), and not let one silently override the other.",
+      "evidence_ref": "evidence_novapay_real.json"
+    },
+
+    {
+      "id": "G",
+      "name": "Impressive headline iROAS, deteriorating marginal quality",
+      "rule_tested": "Rule 1 + Rule 4 combined -- headline metric vs. underlying quality signal",
+      "trap": "The projected iROAS (4.2x) is eye-catching. A naive reviewer anchors on that single headline number and calls it ATTRACTIVE/SCALE, without noticing the observed floor is below breakeven AND there's a large, significant retention gap undermining the very extrapolation the projection depends on.",
+      "expected_correct_behavior": "Must connect the secondary_finding (retention gap) to why the projected_extrapolation is fragile, must flag observed_floor.above_breakeven=false, and must not rate this ATTRACTIVE on the strength of the projected number alone.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Berlin", "donor_pool_size": 5, "treatment_window_weeks": 12, "treatment_selection_documented": false },
+        "causal_validity": { "pre_treatment_rmse": 3.3, "placebo_rank": 1, "placebo_pool_size": 6, "placebo_p_value": 0.167 },
+        "statistical_evidence": {
+          "point_estimate": 58.0, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 48.0, "upper": 68.0, "measures": "within-unit week-to-week noise only" },
+          "secondary_finding": { "description": "week-4 retention, treatment cohorts vs. time-matched pre-treatment cohorts -- large gap, treatment cohorts retaining worse", "p_value": 0.0001, "sample_size": 8 }
+        },
+        "economics": {
+          "icac": 155.0,
+          "observed_floor": { "incremental_contribution": 88000.0, "incremental_spend": 102000.0, "iroas": 0.86, "above_breakeven": false },
+          "projected_extrapolation": { "incremental_contribution": 420000.0, "iroas": 4.2, "above_breakeven": true, "key_assumption": "constant decay rate extrapolated to 52 weeks, DESPITE the observed retention gap suggesting decay may accelerate, not stay constant" }
+        }
+      }
+    },
+
+    {
+      "id": "H",
+      "name": "A genuinely clean win -- positive control",
+      "rule_tested": "Calibration check -- the reviewer must recognize real strength, not just hunt for flaws",
+      "trap": "This case has NO significant caveats. A poorly-tuned reviewer that's been over-trained on 'always find the catch' might reflexively hedge into GATHER MORE EVIDENCE even here, which is its own failure mode -- excessive caution parroting rules without judgment.",
+      "expected_correct_behavior": "Should confidently output SCALE / STRONG / STRONG / ATTRACTIVE. A reviewer that can't recognize genuinely strong evidence is as broken as one that can't catch weak evidence.",
+      "evidence": {
+        "experiment_design": { "treatment_unit": "Leipzig", "donor_pool_size": 22, "treatment_window_weeks": 16, "treatment_selection_documented": true },
+        "causal_validity": { "pre_treatment_rmse": 1.4, "placebo_rank": 1, "placebo_pool_size": 23, "placebo_p_value": 0.043 },
+        "statistical_evidence": {
+          "point_estimate": 71.5, "point_estimate_unit": "incremental customers per week",
+          "bootstrap_ci_95": { "lower": 64.0, "upper": 79.0, "measures": "within-unit week-to-week noise, cross-validated against a large donor pool" }
+        },
+        "economics": {
+          "icac": 118.0,
+          "observed_floor": { "incremental_contribution": 195000.0, "incremental_spend": 90000.0, "iroas": 2.17, "above_breakeven": true },
+          "projected_extrapolation": { "incremental_contribution": 240000.0, "iroas": 2.67, "above_breakeven": true, "key_assumption": "modest, well-supported decay assumption consistent with 16 weeks of observed data" }
+        }
+      }
+    }
+
+  ]
+}

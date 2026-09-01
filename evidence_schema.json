@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NovaPay Experiment Evidence Package",
+  "description": "Consolidated output of the NovaPay causal/statistical/economic pipeline. This is the ONLY information the LLM reviewer sees -- it must reason from these numbers alone, never from outside knowledge or assumptions about what 'usually' happens in geo experiments.",
+  "type": "object",
+  "required": ["experiment_design", "causal_validity", "statistical_evidence", "economics"],
+  "properties": {
+
+    "experiment_design": {
+      "type": "object",
+      "description": "Basic facts about how the test was set up. Used to check selection-bias and structural power-limit rules.",
+      "required": ["treatment_unit", "donor_pool_size", "treatment_window_weeks", "treatment_selection_documented"],
+      "properties": {
+        "treatment_unit": { "type": "string" },
+        "donor_pool_size": { "type": "integer", "description": "Number of untreated comparison units available (e.g. 5 donor cities)." },
+        "treatment_window_weeks": { "type": "integer" },
+        "treatment_selection_documented": {
+          "type": "boolean",
+          "description": "Was there a documented, pre-registered reason the treatment unit was chosen? False = selection bias risk."
+        }
+      }
+    },
+
+    "causal_validity": {
+      "type": "object",
+      "required": ["pre_treatment_rmse", "placebo_rank", "placebo_pool_size", "placebo_p_value"],
+      "properties": {
+        "pre_treatment_rmse": { "type": "number", "description": "Lower = tighter synthetic control fit." },
+        "placebo_rank": { "type": "integer", "description": "Where the real treated unit ranked by |gap| among all units tested as if treated." },
+        "placebo_pool_size": { "type": "integer", "description": "Total units in the placebo test (treated + donors). Determines the best-possible p-value: 1 / pool_size." },
+        "placebo_p_value": { "type": "number" }
+      }
+    },
+
+    "statistical_evidence": {
+      "type": "object",
+      "required": ["point_estimate", "point_estimate_unit", "bootstrap_ci_95"],
+      "properties": {
+        "point_estimate": { "type": "number" },
+        "point_estimate_unit": { "type": "string" },
+        "bootstrap_ci_95": {
+          "type": "object",
+          "required": ["lower", "upper", "measures"],
+          "properties": {
+            "lower": { "type": "number" },
+            "upper": { "type": "number" },
+            "measures": {
+              "type": "string",
+              "description": "What kind of uncertainty this CI actually captures -- e.g. 'within-unit week-to-week noise only, NOT cross-unit placebo uncertainty'. Critical for Rule 6."
+            }
+          }
+        },
+        "secondary_finding": {
+          "type": "object",
+          "description": "Optional. E.g. a retention/quality gap found separately from the headline effect.",
+          "properties": {
+            "description": { "type": "string" },
+            "p_value": { "type": "number" },
+            "sample_size": { "type": "integer" }
+          }
+        }
+      }
+    },
+
+    "economics": {
+      "type": "object",
+      "required": ["observed_floor", "projected_extrapolation"],
+      "properties": {
+        "icac": { "type": "number", "description": "Incremental CAC. Fixed by spend/customers -- does NOT change with retention." },
+        "observed_floor": {
+          "type": "object",
+          "description": "Numbers built ONLY from confirmed, non-extrapolated data.",
+          "required": ["incremental_contribution", "incremental_spend", "iroas", "above_breakeven"],
+          "properties": {
+            "incremental_contribution": { "type": "number" },
+            "incremental_spend": { "type": "number" },
+            "iroas": { "type": "number" },
+            "above_breakeven": { "type": "boolean" }
+          }
+        },
+        "projected_extrapolation": {
+          "type": "object",
+          "description": "Numbers that rely on an assumption holding beyond the observed window (e.g. constant decay rate). Must be labeled as unverified, never presented with the same confidence as observed_floor.",
+          "required": ["incremental_contribution", "iroas", "above_breakeven", "key_assumption"],
+          "properties": {
+            "incremental_contribution": { "type": "number" },
+            "iroas": { "type": "number" },
+            "above_breakeven": { "type": "boolean" },
+            "key_assumption": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
